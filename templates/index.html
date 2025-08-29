@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS AI Assistant</title>
+    <!-- Updated CSS reference to use new jarvis-styles.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='jarvis-styles.css') }}">
+</head>
+<body>
+    <div class="jarvis-interface">
+        <!-- Grid background -->
+        <div class="grid-background"></div>
+
+        <!-- Corner borders -->
+        <div class="corner-border top-left"></div>
+        <div class="corner-border top-right"></div>
+        <div class="corner-border bottom-left"></div>
+        <div class="corner-border bottom-right"></div>
+
+        <!-- Top taskbar -->
+        <div class="taskbar">
+            <div class="taskbar-apps">
+                <div class="taskbar-app">JARVIS AI</div>
+                <div class="taskbar-app">Voice Control</div>
+                <div class="taskbar-app">System Monitor</div>
+                <div class="taskbar-app">Chat Interface</div>
+                <div class="taskbar-app">Settings</div>
+            </div>
+            <div class="taskbar-icons">
+                <div class="system-icons">🔊 🔋 📶</div>
+            </div>
+        </div>
+
+        <!-- Left sidebar applications -->
+        <div class="sidebar">
+            <div class="app-item" onclick="executeCommand('open file manager')">
+                <span class="app-icon">💻</span>
+                <span class="app-name">This PC</span>
+            </div>
+            <div class="app-item" onclick="executeCommand('open google')">
+                <span class="app-icon">🌐</span>
+                <span class="app-name">Google</span>
+            </div>
+            <div class="app-item" onclick="executeCommand('open youtube')">
+                <span class="app-icon">📺</span>
+                <span class="app-name">YouTube</span>
+            </div>
+            <div class="app-item" onclick="toggleVoiceMode()">
+                <span class="app-icon" id="voiceModeIcon">🎤</span>
+                <span class="app-name" id="voiceModeName">Voice Control</span>
+            </div>
+            <div class="app-item" onclick="toggleWakeWordDetection()">
+                <span class="app-icon">👂</span>
+                <span class="app-name">Wake Word</span>
+            </div>
+            <div class="app-item" onclick="toggleChat()">
+                <span class="app-icon">💬</span>
+                <span class="app-name">AI Chat</span>
+            </div>
+        </div>
+
+        <!-- Central JARVIS reactor -->
+        <div class="reactor-container">
+            <div class="container">
+                <div class="arc-reactor" id="arcReactor">
+                    <!-- Outer ring with rotating segments -->
+                    <div class="ring outer-ring">
+                        <div class="rotating-segments outer-segments" id="outerSegments"></div>
+                    </div>
+
+                    <!-- Middle ring -->
+                    <div class="ring middle-ring">
+                        <div class="rotating-segments middle-segments" id="middleSegments"></div>
+                    </div>
+
+                    <!-- Inner ring -->
+                    <div class="ring inner-ring">
+                        <div class="rotating-segments inner-segments" id="innerSegments"></div>
+                    </div>
+
+                    <!-- Core circle -->
+                    <div class="core">
+                        <div class="core-inner"></div>
+                        <div class="core-text">J.A.R.V.I.S.</div>
+                    </div>
+
+                    <!-- Energy arcs -->
+                    <div class="energy-arcs" id="energyArcs"></div>
+
+                    <!-- Power indicators -->
+                    <div class="power-indicators" id="powerIndicators"></div>
+
+                    <!-- Status text -->
+                    <div class="status-text">
+                        <div class="status-main" id="statusMain">REACTOR OFFLINE</div>
+                        <div class="status-sub" id="statusSub">POWER: 0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side panels container -->
+        <div class="right-panels">
+            <!-- Info panel -->
+            <div class="info-panel">
+                <div class="time-display">
+                    <div class="current-time" id="currentTime">12 : 00 : 00 AM</div>
+                    <div class="timezone">AI ASSISTANT ONLINE</div>
+                </div>
+
+                <div class="network-info">
+                    <div class="section-title">SYSTEM STATUS</div>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <span class="status-indicator status-online" id="voiceIndicator"></span>
+                            Voice Recognition
+                        </span>
+                        <span class="info-value" id="voiceStatus">READY</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <span class="status-indicator status-offline" id="wakeWordIndicator"></span>
+                            Wake Word Detection
+                        </span>
+                        <span class="info-value" id="wakeWordStatus">OFFLINE</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <span class="status-indicator status-online" id="aiIndicator"></span>
+                            AI Response
+                        </span>
+                        <span class="info-value" id="aiStatus">ONLINE</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <span class="status-indicator status-online" id="systemIndicator"></span>
+                            System Control
+                        </span>
+                        <span class="info-value" id="systemStatus">ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat panel -->
+            <div class="notes-panel" id="chatPanel">
+                <div class="notes-header">
+                    AI Chat Interface
+                    <!-- Added clear history button -->
+                    <button class="clear-history-btn" onclick="clearChatHistory()" title="Clear History">🗑️</button>
+                </div>
+                <div class="notes-content" id="chatContent">
+                    <div class="note-item">Welcome, sir. How may I assist you today?</div>
+                    <div class="note-detail">Click the reactor to activate systems</div>
+                    <div class="note-detail">Use voice commands or type messages</div>
+                    <div class="note-detail">Try: "Open Google", "Play music", or ask questions</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Type your message..." />
+                    <button onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom quote -->
+        <div class="quote" id="systemQuote">"I am JARVIS, your personal AI assistant - Always at your service, sir."</div>
+    </div>
+
+    <!-- Floating voice control button -->
+    <div class="voice-control-btn" id="voiceBtn" onclick="quickVoiceCommand()">
+        <span id="voiceBtnIcon">🎤</span>
+    </div>
+
+    <!-- Connection status indicator -->
+    <div class="connection-status" id="connectionStatus">
+        <span class="status-indicator status-online" id="connectionIndicator"></span>
+        <span id="connectionText">CONNECTED</span>
+    </div>
+
+    <!-- Updated script references to include both interface initialization and main functionality -->
+    <script src="{{ url_for('static', filename='jarvis-interface.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        let isListening = false;
+        let isContinuousListening = false;
+        let isWakeWordActive = false;
+        let recognition = null;
+        let isProcessing = false;
+        let voiceMode = 'single';
+        let connectionRetryCount = 0;
+        let maxRetries = 3;
+        let isConnected = true;
+
+        // Initialize speech recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                updateVoiceStatus('LISTENING', 'listening');
+                document.getElementById('voiceBtn').classList.add('listening');
+                document.getElementById('voiceBtnIcon').textContent = '🔴';
+            };
+            
+            recognition.onend = function() {
+                isListening = false;
+                if (!isContinuousListening) {
+                    updateVoiceStatus('READY', 'online');
+                    document.getElementById('voiceBtn').classList.remove('listening');
+                    document.getElementById('voiceBtnIcon').textContent = '🎤';
+                }
+            };
+            
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript;
+                const confidence = event.results[0][0].confidence;
+                console.log(`Voice command: "${command}" (confidence: ${confidence})`);
+                
+                addChatMessage('You', `${command} ${confidence < 0.7 ? '(low confidence)' : ''}`);
+                handleVoiceCommand(command);
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                let errorMsg = 'Voice recognition error';
+                
+                switch(event.error) {
+                    case 'network':
+                        errorMsg = 'Network error - check internet connection';
+                        break;
+                    case 'not-allowed':
+                        errorMsg = 'Microphone access denied - please allow microphone permissions';
+                        break;
+                    case 'no-speech':
+                        errorMsg = 'No speech detected - please try again';
+                        break;
+                    case 'audio-capture':
+                        errorMsg = 'No microphone found - please check your audio devices';
+                        break;
+                    default:
+                        errorMsg = `Voice recognition error: ${event.error}`;
+                }
+                
+                updateVoiceStatus('ERROR', 'offline');
+                addChatMessage('System', errorMsg);
+                document.getElementById('voiceBtn').classList.remove('listening');
+                document.getElementById('voiceBtnIcon').textContent = '🎤';
+                
+                isListening = false;
+                setTimeout(() => {
+                    updateVoiceStatus('READY', 'online');
+                }, 2000);
+            };
+        } else {
+            updateVoiceStatus('NOT SUPPORTED', 'offline');
+            addChatMessage('System', 'Speech recognition not supported in this browser. Please use Chrome, Edge, or Safari.');
+        }
+
+        // Enhanced API communication with retry logic and error handling
+        async function apiCall(endpoint, data = {}, retries = 0) {
+            try {
+                updateConnectionStatus(true);
+                
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    timeout: 10000 // 10 second timeout
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                connectionRetryCount = 0; // Reset retry count on success
+                return result;
+                
+            } catch (error) {
+                console.error(`API call to ${endpoint} failed:`, error);
+                updateConnectionStatus(false);
+                
+                // Retry logic
+                if (retries < maxRetries) {
+                    console.log(`Retrying API call to ${endpoint} (attempt ${retries + 1}/${maxRetries})`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (retries + 1))); // Exponential backoff
+                    return apiCall(endpoint, data, retries + 1);
+                }
+                
+                return { 
+                    success: false, 
+                    error: error.message || 'Network error',
+                    retries: retries
+                };
+            }
+        }
+
+        // Connection status management
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            
+            if (connected) {
+                indicator.className = 'status-indicator status-online';
+                text.textContent = 'CONNECTED';
+            } else {
+                indicator.className = 'status-indicator status-offline';
+                text.textContent = 'DISCONNECTED';
+            }
+        }
+
+        // Voice control functions
+        function quickVoiceCommand() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startSingleListening();
+            }
+        }
+
+        async function startSingleListening() {
+            if (recognition && !isListening && !isProcessing) {
+                isListening = true;
+                recognition.continuous = false;
+                
+                try {
+                    recognition.start();
+                    addChatMessage('System', 'Listening for your command, sir...');
+                } catch (error) {
+                    console.error('Failed to start speech recognition:', error);
+                    addChatMessage('System', 'Failed to start voice recognition. Please check microphone permissions.');
+                    isListening = false;
+                    updateVoiceStatus('ERROR', 'offline');
+                }
+            } else if (isProcessing) {
+                addChatMessage('System', 'Please wait, still processing previous command...');
+            } else if (!recognition) {
+                addChatMessage('System', 'Voice recognition not available in this browser.');
+            }
+        }
+
+        async function startContinuousListening() {
+            if (!isContinuousListening) {
+                const result = await apiCall('listen', { type: 'start_continuous' });
+                
+                if (result.success) {
+                    isContinuousListening = true;
+                    updateVoiceStatus('CONTINUOUS', 'listening');
+                    addChatMessage('System', 'Continuous listening activated');
+                    document.getElementById('voiceModeIcon').textContent = '🔴';
+                    document.getElementById('voiceModeName').textContent = 'Stop Voice';
+                } else {
+                    addChatMessage('System', 'Failed to start continuous listening: ' + result.error);
+                }
+            }
+        }
+
+        async function stopContinuousListening() {
+            if (isContinuousListening) {
+                const result = await apiCall('listen', { type: 'stop_continuous' });
+                
+                isContinuousListening = false;
+                updateVoiceStatus('READY', 'online');
+                addChatMessage('System', 'Continuous listening stopped');
+                document.getElementById('voiceModeIcon').textContent = '🎤';
+                document.getElementById('voiceModeName').textContent = 'Voice Control';
+            }
+        }
+
+        function toggleVoiceMode() {
+            if (isContinuousListening) {
+                stopContinuousListening();
+            } else {
+                startContinuousListening();
+            }
+        }
+
+        async function startWakeWordDetection() {
+            if (!isWakeWordActive) {
+                const result = await apiCall('listen', { type: 'start_wake_word' });
+                
+                if (result.success) {
+                    isWakeWordActive = true;
+                    updateWakeWordStatus('ACTIVE', 'online');
+                    addChatMessage('System', 'Wake word detection started. Say "Hey JARVIS" to activate.');
+                } else {
+                    addChatMessage('System', 'Wake word detection not available: ' + result.error);
+                }
+            }
+        }
+
+        async function stopWakeWordDetection() {
+            if (isWakeWordActive) {
+                const result = await apiCall('listen', { type: 'stop_wake_word' });
+                
+                isWakeWordActive = false;
+                updateWakeWordStatus('OFFLINE', 'offline');
+                addChatMessage('System', 'Wake word detection stopped');
+            }
+        }
+
+        function toggleWakeWordDetection() {
+            if (isWakeWordActive) {
+                stopWakeWordDetection();
+            } else {
+                startWakeWordDetection();
+            }
+        }
+
+        function stopListening() {
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            if (isContinuousListening) {
+                stopContinuousListening();
+            }
+        }
+
+        // Handle voice commands from speech recognition
+        function handleVoiceCommand(command) {
+            console.log('Processing voice command:', command);
+            executeCommand(command);
+        }
+
+        // Enhanced command execution with better error handling
+        async function executeCommand(command) {
+            if (isProcessing) {
+                addChatMessage('System', 'Please wait, processing previous command...');
+                return;
+            }
+            
+            isProcessing = true;
+            updateAIStatus('PROCESSING', 'listening');
+            
+            // Add loading message
+            const loadingMsg = addChatMessage('JARVIS', 'Processing your request, sir<span class="loading-dots">...</span>');
+            
+            try {
+                const result = await apiCall('command', { command: command });
+                
+                // Remove loading message
+                if (loadingMsg && loadingMsg.parentNode) {
+                    loadingMsg.remove();
+                }
+                
+                if (result.success) {
+                    // Handle different response types
+                    if (result.message) {
+                        addChatMessage('JARVIS', result.message);
+                        await speak(result.message);
+                    }
+                    if (result.response) {
+                        addChatMessage('JARVIS', result.response);
+                        await speak(result.response);
+                    }
+                    
+                    // Handle special actions
+                    switch(result.action) {
+                        case 'shutdown':
+                            setTimeout(() => {
+                                deactivateReactor();
+                                updateSystemStatus('SHUTTING DOWN', 'offline');
+                                stopContinuousListening();
+                                stopWakeWordDetection();
+                            }, 2000);
+                            break;
+                        case 'wake':
+                            // Wake word detected, ready for next command
+                            if (recognition) {
+                                setTimeout(() => startSingleListening(), 1000);
+                            }
+                            break;
+                    }
+                } else {
+                    const errorMsg = result.error || 'Unknown error occurred';
+                    addChatMessage('System', `Command failed: ${errorMsg}`);
+                    
+                    if (result.retries >= maxRetries) {
+                        addChatMessage('System', 'Multiple connection attempts failed. Please check your connection and ensure the Flask server is running.');
+                    }
+                }
+            } catch (error) {
+                if (loadingMsg && loadingMsg.parentNode) {
+                    loadingMsg.remove();
+                }
+                addChatMessage('System', 'Network error: ' + error.message + '. Make sure your Flask server is running on localhost:5000');
+                console.error('Command execution error:', error);
+            } finally {
+                isProcessing = false;
+                updateAIStatus('ONLINE', 'online');
+            }
+        }
+
+        // Enhanced text-to-speech with error handling
+        async function speak(text) {
+            try {
+                const result = await apiCall('speak', { text: text });
+                if (!result.success) {
+                    console.error('TTS error:', result.error);
+                    addChatMessage('System', 'Text-to-speech error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Speech error:', error);
+            }
+        }
+
+        // Chat functions
+        function addChatMessage(sender, message) {
+            const chatContent = document.getElementById('chatContent');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'note-item';
+            
+            // Add timestamp for system messages
+            const timestamp = new Date().toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            if (sender === 'System') {
+                messageDiv.innerHTML = `<span class="timestamp">[${timestamp}]</span> <strong>${sender}:</strong> ${message}`;
+            } else {
+                messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            }
+            
+            chatContent.appendChild(messageDiv);
+            chatContent.scrollTop = chatContent.scrollHeight;
+            
+            // Limit chat history to prevent memory issues
+            const messages = chatContent.children;
+            if (messages.length > 100) {
+                chatContent.removeChild(messages[0]);
+            }
+            
+            return messageDiv;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message && !isProcessing) {
+                addChatMessage('You', message);
+                executeCommand(message);
+                input.value = '';
+            }
+        }
+
+        // Clear chat history
+        async function clearChatHistory() {
+            const result = await apiCall('clear-history');
+            
+            if (result.success) {
+                const chatContent = document.getElementById('chatContent');
+                chatContent.innerHTML = '<div class="note-item">Chat history cleared, sir.</div>';
+                addChatMessage('System', 'Conversation history cleared');
+            } else {
+                addChatMessage('System', 'Failed to clear history: ' + result.error);
+            }
+        }
+
+        // Status update functions
+        function updateVoiceStatus(status, indicator) {
+            document.getElementById('voiceStatus').textContent = status;
+            updateIndicator('voiceIndicator', indicator);
+        }
+
+        function updateAIStatus(status, indicator) {
+            document.getElementById('aiStatus').textContent = status;
+            updateIndicator('aiIndicator', indicator);
+        }
+
+        function updateSystemStatus(status, indicator) {
+            document.getElementById('systemStatus').textContent = status;
+            updateIndicator('systemIndicator', indicator);
+        }
+
+        function updateWakeWordStatus(status, indicator) {
+            document.getElementById('wakeWordStatus').textContent = status;
+            updateIndicator('wakeWordIndicator', indicator);
+        }
+
+        function updateIndicator(elementId, status) {
+            const indicator = document.getElementById(elementId);
+            if (indicator) {
+                indicator.className = `status-indicator status-${status}`;
+            }
+        }
+
+        // Chat panel toggle
+        function toggleChat() {
+            const chatPanel = document.getElementById('chatPanel');
+            const isHidden = chatPanel.style.display === 'none';
+            chatPanel.style.display = isHidden ? 'block' : 'none';
+            
+            if (!isHidden) {
+                addChatMessage('System', 'Chat panel minimized');
+            }
+        }
+
+        // Enhanced reactor toggle with complete system integration
+        function toggleReactor() {
+            if (isReactorActive) {
+                deactivateReactor();
+                speak("Reactor offline, sir. All systems shutting down.");
+                updateSystemStatus('OFFLINE', 'offline');
+                
+                // Stop all voice services
+                stopContinuousListening();
+                stopWakeWordDetection();
+                
+            } else {
+                activateReactor();
+                speak("Reactor online. All systems operational, sir.");
+                updateSystemStatus('ACTIVE', 'online');
+                
+                // Initialize voice services
+                setTimeout(() => {
+                    if (recognition) {
+                        addChatMessage('JARVIS', 'Voice control ready. Click the microphone or use sidebar controls, sir.');
+                    }
+                    
+                    // Check backend speech service status
+                    checkSpeechServiceStatus();
+                }, 2000);
+            }
+        }
+
+        // Check speech service status
+        async function checkSpeechServiceStatus() {
+            try {
+                const response = await fetch('/api/speech-status');
+                const status = await response.json();
+                
+                if (status.success) {
+                    const speechStatus = status.speech_status;
+                    
+                    if (speechStatus.vosk_available) {
+                        addChatMessage('System', 'Advanced wake word detection available');
+                    } else {
+                        addChatMessage('System', 'Note: Advanced wake word detection requires Vosk model');
+                    }
+                    
+                    if (!speechStatus.google_sr_available) {
+                        addChatMessage('System', 'Warning: Google Speech Recognition not available');
+                        updateVoiceStatus('UNAVAILABLE', 'offline');
+                    }
+                } else {
+                    addChatMessage('System', 'Could not check speech service status');
+                }
+            } catch (error) {
+                console.error('Speech status check failed:', error);
+            }
+        }
+
+        // Periodic system health check
+        async function performHealthCheck() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                if (status.success) {
+                    updateConnectionStatus(true);
+                    
+                    // Update time display
+                    document.getElementById('currentTime').textContent = status.time;
+                    
+                    // Update component statuses
+                    const components = status.components;
+                    
+                    if (components.speech_recognition === 'LISTENING') {
+                        updateVoiceStatus('LISTENING', 'listening');
+                    } else if (components.speech_recognition === 'WAKE_WORD_ACTIVE') {
+                        updateVoiceStatus('READY', 'online');
+                        updateWakeWordStatus('ACTIVE', 'online');
+                    } else if (components.speech_recognition === 'READY') {
+                        updateVoiceStatus('READY', 'online');
+                    } else if (components.speech_recognition === 'OFFLINE') {
+                        updateVoiceStatus('OFFLINE', 'offline');
+                    }
+                    
+                    // Update other components
+                    if (components.tts === 'OFFLINE') {
+                        addChatMessage('System', 'Warning: Text-to-speech service offline');
+                    }
+                    
+                } else {
+                    updateConnectionStatus(false);
+                }
+            } catch (error) {
+                updateConnectionStatus(false);
+                console.error('Health check failed:', error);
+            }
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('JARVIS Interface initializing...');
+            
+            // Initialize the reactor interface
+            initializeInterface();
+            
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        console.log('Microphone access granted');
+                        addChatMessage('System', 'Microphone access granted. Voice control ready.');
+                        stream.getTracks().forEach(track => track.stop()); // Stop the stream, we just needed permission
+                        updateVoiceStatus('READY', 'online');
+                    })
+                    .catch(function(error) {
+                        console.error('Microphone access denied:', error);
+                        addChatMessage('System', 'Microphone access denied. Please allow microphone permissions for voice control.');
+                        updateVoiceStatus('NO PERMISSION', 'offline');
+                    });
+            }
+            
+            // Add enter key support for chat
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Space for quick voice command
+                if (e.ctrlKey && e.code === 'Space') {
+                    e.preventDefault();
+                    quickVoiceCommand();
+                }
+                
+                // Escape to stop all voice services
+                if (e.key === 'Escape') {
+                    stopListening();
+                }
+            });
+            
+            // Start periodic health checks
+            setInterval(performHealthCheck, 5000); // Reduced frequency to avoid spam
+            
+            // Initial health check
+            setTimeout(performHealthCheck, 1000);
+            
+            // Welcome sequence
+            setTimeout(function() {
+                addChatMessage('JARVIS', 'Good day, sir. All systems are online and ready for your commands.');
+                speak('Good day, sir. All systems are online and ready for your commands.');
+                
+                // Show available commands after welcome
+                setTimeout(() => {
+                    addChatMessage('System', 'Voice commands: Click the microphone button or press Ctrl+Space to speak.');
+                    addChatMessage('System', 'Try saying: "Open Google", "Play music on YouTube", "What time is it?", or ask any question.');
+                }, 3000);
+            }, 2000);
+            
+            console.log('JARVIS Interface initialized successfully');
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden, pause non-essential services
+                console.log('Page hidden, pausing services');
+            } else {
+                // Page is visible, resume services
+                console.log('Page visible, resuming services');
+                setTimeout(performHealthCheck, 500);
+            }
+        });
+
+        // Handle beforeunload to cleanup
+        window.addEventListener('beforeunload', function() {
+            stopContinuousListening();
+            stopWakeWordDetection();
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+        });
+    </script>
+</body>
+</html>
