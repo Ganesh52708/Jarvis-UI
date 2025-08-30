@@ -23,7 +23,7 @@ import base64
 from PIL import ImageGrab
 
 # ========== CONFIG ==========
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 VOSK_MODEL_PATH = r".\vosk-model-small-en-us-0.15"
 
 WAKE_WORDS = ["hey"]
